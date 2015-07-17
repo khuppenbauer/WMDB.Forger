@@ -15,8 +15,8 @@ WMDB:
             must:
               - term: {focus.name: Stabilization Sprint}
               - term: {fixed_version.name: 7.4 (Backend)}
-      ParisSprint:
-        Name: Paris Sprint
+      T3DD15:
+        Name: Coding Night
         Query:
           bool:
             must:
