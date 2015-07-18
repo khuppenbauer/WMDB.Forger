@@ -8,7 +8,7 @@ namespace WMDB\Forger\Command;
 
 use TYPO3\Flow\Annotations as Flow;
 use WMDB\Forger\Utilities\ElasticSearch\ElasticSearchConnection;
-use WMDB\Utilities\Utility\GeneralUtility;
+use TYPO3\Flow\Utility;
 use Elastica;
 use TYPO3\Flow\Cli;
 use Redmine;
@@ -165,8 +165,6 @@ class ForgeImportCommandController extends Cli\CommandController {
 		$res = $this->redmineClient->api('issue')->show($issueId, array('include' => array('journals')));
 		if (is_array($res)) {
 			$this->addDocumentToElastic($res['issue']);
-		} else {
-			GeneralUtility::writeLine('Issue '.$issueId.' did not return an array.', 'red');
 		}
 	}
 
@@ -194,8 +192,6 @@ class ForgeImportCommandController extends Cli\CommandController {
 				$this->getTicketAndJournal($doc['id']);
 			}
 			$currentSlot = ($currentSlot + $perRun);
-			GeneralUtility::writeLine('');
-			GeneralUtility::writeLine('Working on '.$currentSlot.' of '.$fullAmount.' total', 'yellow');
 		}
 
 	}
@@ -214,8 +210,6 @@ class ForgeImportCommandController extends Cli\CommandController {
 				foreach ($result as $review) {
 					$this->addDocumentToElastic($review, 'review');
 				}
-				GeneralUtility::writeLine('');
-				GeneralUtility::writeLine('Working on '.$currentSlot.' of '.$fullAmount.' total', 'yellow');
 			}
 			$currentSlot = ($currentSlot + $perRun);
 		}
@@ -296,7 +290,7 @@ class ForgeImportCommandController extends Cli\CommandController {
 		if(strstr($matches[1], '4.5 LTS')) {
 			$matches[1] = str_replace('4.5 LTS', '4.5', $matches[1]);
 		}
-		$releaseArray = GeneralUtility::trimExplode(',', $matches[1]);
+		$releaseArray = Utility\Arrays::trimExplode(',', $matches[1]);
 		foreach ($releaseArray as $key => $release) {
 			if(strstr($release, ' ')) {
 				\TYPO3\Flow\var_dump($releaseArray);
@@ -413,7 +407,6 @@ class ForgeImportCommandController extends Cli\CommandController {
 		$doc = new Elastica\Document($document['id'], $document);
 		#\TYPO3\Flow\var_dump($doc);
 		$type->addDocument($doc);
-		GeneralUtility::writeLine('+'.$type->getName().':'.$document['id'].' ', 'green', false);
 		#sleep(1);
 	}
 

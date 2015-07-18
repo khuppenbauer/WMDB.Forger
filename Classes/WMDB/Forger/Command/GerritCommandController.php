@@ -4,7 +4,6 @@ namespace WMDB\Forger\Command;
 use TYPO3\Flow\Annotations as Flow;
 use Redmine;
 use TYPO3\Flow\Exception;
-use WMDB\Utilities\Utility\GeneralUtility;
 use TYPO3\Flow\Cli;
 use WMDB\Forger\Utilities\ElasticSearch as Es;
 use Elastica as El;
@@ -53,10 +52,6 @@ class GerritCommandController extends Cli\CommandController {
 	 * @param string $date
 	 */
 	public function abandonedCommand($date = '2015-01-01') {
-		GeneralUtility::writeLine('                    ', 'inverseRed');
-		GeneralUtility::writeLine('h2. Abandoned Reviews that are still open', 'inverseRed');
-		GeneralUtility::writeLine('                    ', 'inverseRed');
-		GeneralUtility::writeLine('|_.Issue|_.Subject|_. Gerrit Link|', 'inverseRed');
 		$this->processList('status:abandoned', array('Closed', 'Rejected', 'Resolved'), $date);
 	}
 
@@ -64,10 +59,6 @@ class GerritCommandController extends Cli\CommandController {
 	 * @param string $date
 	 */
 	public function mergedWithOpenTicketsCommand($date = '2015-01-01') {
-		GeneralUtility::writeLine('                     ', 'inverseRed');
-		GeneralUtility::writeLine('h2. Merged Review that are still open', 'inverseRed');
-		GeneralUtility::writeLine('                     ', 'inverseRed');
-		GeneralUtility::writeLine('|_.Issue|_.Subject|_. Gerrit Link|', 'inverseRed');
 		$this->processList('status:merged', array('Closed', 'Rejected', 'Resolved'), $date);
 	}
 
@@ -111,8 +102,6 @@ class GerritCommandController extends Cli\CommandController {
 			$ticketId = $this->getTicketId($change['revisions'][$change['current_revision']]['commit']['message']);
 			if($ticketId > 0) {
 				$this->getTicketStatus($ticketId, $change['_number'],$expectedStatus);
-			} else {
-//				GeneralUtility::writeLine($change['_number'].' has no ticket ', 'red');
 			}
 		}
 	}
@@ -184,7 +173,6 @@ class GerritCommandController extends Cli\CommandController {
 //		$res = $this->redmineClient->api('issue')->show($issueId);
 //		if (is_array($res)) {
 //			if(in_array($res['issue']['status']['name'], $unexpectedStatus)) {
-//				GeneralUtility::writeLine('|Issue #'.$issueId.'|'.$res['issue']['subject'].'|https://review.typo3.org/#/c/'.$gerritNumber.'/|', 'yellow');
 //			}
 //		} else {
 //			$this->counter['noArray']++;
@@ -208,7 +196,6 @@ class GerritCommandController extends Cli\CommandController {
 						&& !strstr($journalEntry['notes'], 'It is available at http://review.typo3.org/'.$gerritNumber)
 					) {
 						$hasPatchset = true;
-//						GeneralUtility::writeLine($journalEntry['notes'], 'green');
 					}
 					if (isset($journalEntry['notes']) && !strstr($journalEntry['notes'], 'It is available at http://review.typo3.org/'.$gerritNumber)) {
 						$numberOfPatchsets++;
@@ -216,14 +203,9 @@ class GerritCommandController extends Cli\CommandController {
 				}
 
 				if (!$hasPatchset && $numberOfPatchsets > 1) {
-					GeneralUtility::writeLine('|Issue #' . $issueId . '|' . $doc['subject'] . '|https://review.typo3.org/#/c/' . $gerritNumber . '/|', 'yellow');
 				}
-			} else {
-//				GeneralUtility::writeLine($issueId . ' has correct status ', 'green', false);
-//				GeneralUtility::writeLine($doc['status']['name'], 'yellow');
 			}
 		} catch (El\Exception\NotFoundException $e) {
-			#GeneralUtility::writeLine($e->getMessage(), 'inverseRed');
 		}
 	}
 

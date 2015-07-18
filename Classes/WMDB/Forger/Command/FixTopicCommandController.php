@@ -7,7 +7,6 @@ namespace WMDB\Forger\Command;
  *                                                                        */
 
 use TYPO3\Flow\Annotations as Flow;
-use WMDB\Utilities\Utility\GeneralUtility;
 use Elastica;
 use TYPO3\Flow\Cli;
 use Redmine;
@@ -128,7 +127,6 @@ class FixTopicCommandController extends Cli\CommandController {
 		$data = json_decode(str_replace(")]}'", '', $json), true);
 		foreach ($data as $change) {
 			if(!isset($change['topic'])) {
-				#GeneralUtility::writeLine('------------------------------------------------------------------------ '.$change['_number'].' ----------------------------------------------------------------------------');
 				$affectedExtensions = $this->determineFiles($change['revisions'][$change['current_revision']]['files']);
 				switch(count($affectedExtensions)) {
 					case 0:
@@ -148,14 +146,12 @@ class FixTopicCommandController extends Cli\CommandController {
 
 							default:
 								$topic = $affectedExtensions[0];
-								GeneralUtility::writeLine($change['_number'].' ', 'inverseRed', false);
 								$this->setTopic($change['id'], $topic);
 						}
 
 						break;
 					default:
 						#\TYPO3\Flow\var_dump($affectedExtensions);
-						#GeneralUtility::writeLine('Multipe extensions affected by change '.$change['_number'], 'red');
 						$this->counter['cannotSet']++;
 						break;
 				}
@@ -193,7 +189,6 @@ class FixTopicCommandController extends Cli\CommandController {
 
 			))
 		);
-		GeneralUtility::writeLine('Setting topic to '.$topic, 'yellow');
 		$this->counter['canSet']++;
 	}
 
@@ -226,7 +221,6 @@ class FixTopicCommandController extends Cli\CommandController {
 				$pattern = '/' . str_replace('/', '\/', $path) . '/';
 				preg_match($pattern, $fileName, $matches);
 				if (isset($matches[1])) {
-					#GeneralUtility::writeLine('ALLOWED: ' . $topic . ' | ' . $path . ' matches file ' . $fileName, 'green');
 					return $topic;
 				}
 			}
@@ -236,7 +230,6 @@ class FixTopicCommandController extends Cli\CommandController {
 				$pattern = '/' . str_replace('/', '\/', $path) . '/';
 				preg_match($pattern, $fileName, $matches);
 				if (isset($matches[1])) {
-					#GeneralUtility::writeLine('DISALLOWED: ' . $topic . ' | ' . $path . ' matches file ' . $fileName, 'red');
 					return false;
 				}
 			}
@@ -245,10 +238,8 @@ class FixTopicCommandController extends Cli\CommandController {
 		$pattern = '/typo3\/sysext\/(.*?)\//';
 		preg_match($pattern, $fileName, $matches);
 		if(isset($matches[1])) {
-			#GeneralUtility::writeLine('REGULAR hit for '.$matches[1] .' for '.$fileName, 'yellow');
 			return 'EXT: '.$matches[1];
 		} else {
-			GeneralUtility::writeLine('NOTANEXT '.$fileName, 'blue');
 			return 'NOTANEXT';
 		}
 	}

@@ -13,7 +13,6 @@ use WMDB\Forger\Graph\Gerrit\Full as GerritFull;
 use WMDB\Forger\Utilities\ElasticSearch\ElasticSearch;
 use WMDB\Forger\Utilities\ElasticSearch\ElasticSearchConnection;
 use WMDB\Forger\Utilities\Memes\MemeUtility;
-use WMDB\Utilities\Utility\GeneralUtility;
 
 /**
  * Class StandardController
