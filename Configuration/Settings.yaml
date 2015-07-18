@@ -60,7 +60,7 @@ WMDB:
           owner:
             type: string
             index: not_analyzed
-            store: true review:
+            store: true
           id:
             type: integer
           change_id:
