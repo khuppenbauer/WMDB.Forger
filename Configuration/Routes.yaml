@@ -8,6 +8,16 @@
   appendExceedingArguments: true
 
 -
+  name: 'create follow up forge issue'
+  uriPattern: 'forge/create'
+  defaults:
+    '@controller': 'Forge'
+    '@action': 'create'
+    '@package': 'WMDB.Forger'
+    '@format': 'json'
+  appendExceedingArguments: true
+
+-
   name: 'default with controller and action'
   uriPattern: '{@controller}(/{@action})'
   defaults:

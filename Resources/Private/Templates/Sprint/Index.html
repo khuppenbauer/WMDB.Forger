@@ -5,6 +5,30 @@
 <script type="application/javascript">
 	$(function () {
 		$('[data-toggle="tooltip"]').tooltip()
+        $(document).on('click', 'a.jq-button', function(){
+            $('#jq-issue-id').html($(this).data('issue'));
+            $('#issue_subject').val($(this).data('subject'));
+            $('#issue_description').val($(this).data('description'));
+            $('#issue_tracker_id').val($(this).data('tracker'));
+            $('#issue_related_id').val($(this).data('card'));
+            $('#myRedmineModal').modal('show');
+        });
+        $(document).on('click', 'button#submit', function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: $("#ajaxform").attr("action"),
+                data: $("#ajaxform").serializeArray(),
+                dataType: 'json',
+                success: function(res){
+                    $("#modal-body").html('Issue created<br /><a href="https://forge.typo3.org/issues/' + res['id'] + '" target="_blank" title="#' + res['id'] + ' ' + res['subject'] + '">#' + res['id'] + ' ' + res['subject'] + '</a>');
+                },
+                error: function(){
+                    $("#modal-body").text('Issue creation failed');
+
+                }
+            });
+        });
 	});
 </script>
 </f:section>
@@ -127,4 +151,49 @@
             </div>
         </div>
     </f:if>
+    <div class="modal fade" id="myRedmineModal" tabindex="-1" role="dialog" aria-labelledby="myRedmineModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myRedmineModalLabel">Follow up for #<span id="jq-issue-id"></span></h4>
+                </div>
+
+                <div class="modal-body" id="modal-body">
+                    <f:form action="create" controller="forge" method="POST" additionalAttributes="{role:'form'}" class="form-horizontal" id="ajaxform">
+                        <input type="hidden" value="" size="80" name="issue[related_id]" id="issue_related_id" class="form-control">
+                        <div class="form-group">
+                            <label for="issue_tracker_id" class="col-md-3 control-label">Tracker<span class="required"> *</span></label>
+                            <div class="col-md-9">
+                                <select name="issue[tracker_id]" id="issue_tracker_id" class="form-control">
+                                    <option value="1">Bug</option>
+                                    <option value="2">Feature</option>
+                                    <option value="5">Major Feature</option>
+                                    <option value="4">Task</option>
+                                    <option value="6">Story</option>
+                                    <option value="7">Suggestion</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="issue_subject" class="col-md-3 control-label">Subject<span class="required"> *</span></label>
+                            <div class="col-md-9">
+                                <input type="text" size="80" name="issue[subject]" id="issue_subject" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Description</label>
+                            <div class="col-md-9">
+                                <textarea rows="10" name="issue[description]" id="issue_description" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="submit">Create Follow up Issue</button>
+                        </div>
+                    </f:form>
+                </div>
+            </div>
+        </div>
+    </div>
 </f:section>
